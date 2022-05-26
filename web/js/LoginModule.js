@@ -60,6 +60,49 @@ class LoginModule{
      })
      
  }
+ registrationNewUser(){
+     const firstname = document.getElementById('firstname').value;
+     const lastname = document.getElementById('lastname').value;
+     const phone = document.getElementById('phone').value;
+     const login = document.getElementById('login').value;
+     const password1 = document.getElementById('password1').value;
+     const password2 = document.getElementById('password2').value;
+     if(password1 !== password2){
+         document.getElementById('info').innerHTML = 'Пароли не совпадают';
+         document.getElementById('password1').innerHTML = "";
+         document.getElementById('password2').innerHTML = "";
+         return;
+     }
+     const user = {
+         "firstname": firstname,
+         "lastname": lastname,
+         "phone": phone,
+         "login": login,
+         "password": password1,
+     };
+     let promise = fetch('registration',{
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json;charset:utf8'
+        },
+        credentials: 'include',
+        body: JSON.stringify(user)
+    });
+    promise.then(respnose => respnose.json())
+            .then(response =>{
+                if(response.status){
+                    document.getElementById('info').innerHTML = response.info;
+                    viewModule.showLoginForm();
+                }else{
+                    document.getElementById('info').innerHTML = response.info;
+                    viewModule.showRegistrationForm();
+                }
+            })
+            .catch(error =>{
+                document.getElementById('info').innerHTML = "Ошибка запроса (registrationNewUser): "+error;
+                document.getElementById('content').innerHTML = "";
+            });
+ }
 }
 
 const loginModule = new LoginModule();
