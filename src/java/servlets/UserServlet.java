@@ -66,7 +66,7 @@ public class UserServlet extends HttpServlet {
         JsonObjectBuilder job = Json.createObjectBuilder();
         HttpSession session = request.getSession(false);
         if(session == null){
-            job.add("info", "Вы не авторизованы");
+            job.add("info", "You are not authorized");
                     job.add("auth", false);
                     try (PrintWriter out = response.getWriter()) {
                         out.println(job.build().toString());
@@ -75,15 +75,7 @@ public class UserServlet extends HttpServlet {
         }
         User authUser = (User) session.getAttribute("authUser");
         if(authUser == null){
-            job.add("info", "Вы не авторизованы");
-                    job.add("auth", false);
-                    try (PrintWriter out = response.getWriter()) {
-                        out.println(job.build().toString());
-                    }
-                    return;
-        }
-        if(!userRolesFacade.isRole("USER",authUser)){
-            job.add("info", "У вас нет необходимых разрешений");
+            job.add("info", "You are not authorized");
                     job.add("auth", false);
                     try (PrintWriter out = response.getWriter()) {
                         out.println(job.build().toString());
@@ -97,13 +89,13 @@ public class UserServlet extends HttpServlet {
                 if(!userId.equals(authUser.getId().toString())){
                     job.add("listAccountData", "")
                        .add("status", false)
-                       .add("info", "Вы не тот за кого себя выдаете");
+                       .add("info", "You are not the person on the account");
                     break;
                 }
                 List<AccountData> listAccountData = accountDataFacade.findAll(authUser);
                 if(listAccountData.isEmpty()){
                     job.add("listAccountData", "");
-                    job.add("status", true).add("info", "Список пуст");
+                    job.add("status", true).add("info", "List is empty");
                     try (PrintWriter out = response.getWriter()) {
                       out.println(job.build().toString());
                     } 
@@ -118,30 +110,25 @@ public class UserServlet extends HttpServlet {
                 break;
             case "/addNewAccount":
                Part part = request.getPart("imageFile");
-               StringBuilder pathToUploadUserDir = new StringBuilder(); // создаем пустой экземпляр класса StringBuilder
-               pathToUploadUserDir.append("D:\\uploadDir\\SPTV20PasswordManager") 
+               StringBuilder pathToUploadUserDir = new StringBuilder(); 
+               pathToUploadUserDir.append("D:\\uploadDir\\SPTV20WebShoeShopMozgovJS") 
                                   .append(File.separator)
-                                  .append(authUser.getId().toString()); //каталог с именем равным идентификатору пользователя
+                                  .append(authUser.getId().toString()); 
                File mkDirFile = new File(pathToUploadUserDir.toString());
-               mkDirFile.mkdirs(); //Создаем путь к каталогу, где хранятся изображения для конкретного пользователя
-               StringBuilder pathToUploadFile = new StringBuilder(); // Здесь будет путь к загруженному файлу
+               mkDirFile.mkdirs();
+               StringBuilder pathToUploadFile = new StringBuilder();
                pathToUploadFile.append(pathToUploadUserDir.toString())
                                .append(File.separator)
                                .append(getFileName(part));
-               File file = new File(pathToUploadFile.toString()); //Дескриптор для загружаемого файла
-               try(InputStream fileContent = part.getInputStream()){ // получаем ресурс - поток данных загружаемого файла
+               File file = new File(pathToUploadFile.toString()); 
+               try(InputStream fileContent = part.getInputStream()){ 
                     Files.copy(
-                            fileContent, // поток данных
-                            file.toPath(), // путь к сохраняемому файлу
-                            StandardCopyOption.REPLACE_EXISTING // опция: пересоздать файл, если такой уже есть на диске.
+                            fileContent, 
+                            file.toPath(), 
+                            StandardCopyOption.REPLACE_EXISTING 
                     );
                 }
-               // здесь пишем код, который:
-               // 1. создает сущность
-               // 2. получает путь к загруженному файлу для добавления его к сущности
-               // 3. получает из запроса url, login, password
-               // 4. инициирует сущность и сохраняет ее в базу
-        //----- так как данные приходят от формы, то получаем данные из запроса через метод getParameter();   
+  
                String caption = request.getParameter("caption");
                String url = request.getParameter("url");
                String login = request.getParameter("login");
@@ -154,7 +141,7 @@ public class UserServlet extends HttpServlet {
                accountData.setPathToImage(pathToUploadFile.toString());
                accountData.setUser(authUser);
                accountDataFacade.create(accountData);
-               job.add("info", "Добавлен новый аккаунт");
+               job.add("info", "Added new model");
                job.add("status", true);
                try (PrintWriter out = response.getWriter()) {
                   out.println(job.build().toString());

@@ -1,12 +1,15 @@
 import {viewModule} from './ViewModule.js';
+import {loginModule} from './LoginModule.js';
+import {adminModule} from './AdminModule.js';
+
 
 class UserModule{
     sendNewAccountData(){
-        let promiseSentAccound = fetch('addNewAccount',{
+        let promiseSentAccount = fetch('addNewAccount',{
             method: 'POST',
             body: new FormData(document.getElementById('form_add_accound'))
         });
-        promiseSentAccound.then(response => response.json())
+        promiseSentAccount.then(response => response.json())
                           .then(response =>{
                               if(response.status){
                                   document.getElementById('info').innerHTML = response.info;

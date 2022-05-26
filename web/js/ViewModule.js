@@ -1,5 +1,6 @@
 import {loginModule} from './LoginModule.js';
 import {userModule} from './UserModule.js';
+import {adminModule} from './AdminModule.js';
 
 class ViewModule{
     showLoginForm(){
@@ -42,39 +43,69 @@ class ViewModule{
         content.innerHTML = 
             `<div class="card border-primary mb-3 mx-auto" style="max-width: 40rem;">
                 <form id="form_add_accound">
-                    <h3 class="card-header text-center my-3">Новая учетная запись</h3>
+                    <h3 class="card-header text-center my-3">New Shoes</h3>
                     <div class="card-body">
                       <div class="form-group">
-                        <label for="caption" class="form-label mt-4">Заголовок</label>
-                        <input type="text" class="form-control" id="caption" name="caption" placeholder="Заголовок">
+                        <label for="caption" class="form-label mt-4">Brand</label>
+                        <input type="text" class="form-control" id="caption" name="caption" placeholder="Brand">
                       </div>
                       <div class="form-group">
-                        <label for="url" class="form-label mt-4">URL</label>
-                        <input type="text" class="form-control" id="url" name="url" placeholder="URL">
+                        <label for="url" class="form-label mt-4">Model</label>
+                        <input type="text" class="form-control" id="url" name="url" placeholder="Model">
                       </div>
                       <div class="form-group">
-                        <label for="login" class="form-label mt-4">Логин</label>
-                        <input type="text" class="form-control" id="login" name="login" placeholder="Логин">
+                        <label for="login" class="form-label mt-4">size</label>
+                        <input type="text" class="form-control" id="login" name="login" placeholder="Size">
                       </div>
                       <div class="form-group">
-                        <label for="password" class="form-label mt-4">Пароль</label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Пароль">
+                        <label for="password" class="form-label mt-4">price</label>
+                        <input type="text" class="form-control" id="password" name="password" placeholder="Price">
                       </div>
                       <div class="form-group">
-                        <label for="imageFile" class="form-label mt-4">Изображение</label>
+                        <label for="imageFile" class="form-label mt-4">Pic</label>
                         <input class="form-control" type="file" id="image_file" name="imageFile">
                       </div>  
                       <div class="w-100 text-center my-3">
-                        <button type="submit" class="btn btn-primary my-3" id="btn_add_account">Добавить</button>
+                        <button type="submit" class="btn btn-primary my-3" id="btn_add_account">Add</button>
                       </div>
                     </div>
                 </form>
             </div>`;
-        document.getElementById('form_add_accound').addEventListener('submit',e=>{
+        document.getElementById('form_add_accound').addEventListener('submit', (e)=>{
             e.preventDefault();
             userModule.sendNewAccountData();
         });
+        
     }
+    
+    showAdminPanelForm(){
+        document.getElementById("info").innerHTML = '';
+        const content = document.getElementById('content');
+        content.innerHTML = 
+            `<div class="card border-primary my-5 mx-auto" style="max-width: 30rem;">
+                <h3 class="card-header text-center">Панель администратора</h3>
+                <div class="card-body">
+                  <div class="form-group">
+                    <label for="select_users" class="form-label mt-4">Пользователи</label>
+                    <select class="form-select" id="select_users" name="selectUsers">
+                      
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="select_roles" class="form-label mt-4">Роли</label>
+                    <select class="form-select" id="select_roles" name="selectRoles">
+                      
+                    </select>
+                  </div>
+                <button id="btnSetRole" type="submit" class="btn btn-primary m-3">Назначить роль</button>
+            </div>`;
+        
+        document.getElementById('btnSetRole').addEventListener('click',(e)=>{
+            e.preventDefault();
+            adminModule.setNewRole();
+        });
+    }
+    
     showListAccountsData(listAccountData){
         let content = document.getElementById('content');
         content.innerHTML = "";
@@ -86,12 +117,12 @@ class ViewModule{
             list.innerHTML +=  
             `<div class="card border-primary m-3 p-2" style="max-width: 18rem;">
                 <h3 class="card-header text-center my-3">${listAccountData[i].caption}</h3>
-                <a href="${listAccountData[i].url}" target="_blank">
-                    <img src="insertFile/${listAccountData[i].pathToImage}" class="card-img-top" style="max-height: 20rem;" alt="...">
-                </a>
+                <img src="insertFile/${listAccountData[i].pathToImage}" class="card-img-top" style="max-height: 20rem;" alt="...">
                 <div class="card-body">
-                    <p class="card-text">Логин: ${listAccountData[i].login}</p>
-                    <p class="card-text">Пароль: ${listAccountData[i].password}</p>
+                    <p class="card-text'>Brand: ${listAccountData[i].caption}</p>
+                    <p class="card-text'>Brand: ${listAccountData[i].url}</p>
+                    <p class="card-text">Size: ${listAccountData[i].login}</p>
+                    <p class="card-text">Price: ${listAccountData[i].password}</p>
                 </div>
             </div>`
         }
@@ -135,6 +166,9 @@ class ViewModule{
             loginModule.registrationNewUser();
         })
     }
+    
+    
+    
 }
 const viewModule = new ViewModule();
 export {viewModule};

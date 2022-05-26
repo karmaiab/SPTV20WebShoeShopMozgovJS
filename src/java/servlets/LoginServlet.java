@@ -156,7 +156,7 @@ public class LoginServlet extends HttpServlet {
                         || "".equals(phone) || "".equals(login)
                         || "".equals(password)){
                     job.add("status", false);
-                    job.add("info", "Все поля должны быть заполнены");
+                    job.add("info", "All fields have to be filled out");
                     try (PrintWriter out = response.getWriter()) {
                         out.println(job.build().toString());
                     }
@@ -178,7 +178,7 @@ public class LoginServlet extends HttpServlet {
                 ur.setUser(newUser);
                 userRolesFacade.create(ur);
                 job.add("status", true);
-                    job.add("info", "Новый пользователь добавлен");
+                    job.add("info", "New account added");
                     try (PrintWriter out = response.getWriter()) {
                         out.println(job.build().toString());
                     }
