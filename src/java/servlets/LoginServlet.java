@@ -143,6 +143,46 @@ public class LoginServlet extends HttpServlet {
                     }
                 }
                 break;
+                
+            case "/registration":
+                jsonReader = Json.createReader(request.getReader());
+                jo = jsonReader.readObject();
+                String firstname = jo.getString("firstname","");
+                String lastname = jo.getString("lastname","");
+                String phone = jo.getString("phone","");
+                login = jo.getString("login","");
+                password = jo.getString("password","");
+                if("".equals(firstname) || "".equals(lastname)
+                        || "".equals(phone) || "".equals(login)
+                        || "".equals(password)){
+                    job.add("status", false);
+                    job.add("info", "Все поля должны быть заполнены");
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println(job.build().toString());
+                    }
+                    break;
+                }
+                User newUser = new User();
+                newUser.setFirstname(firstname);
+                newUser.setLastname(lastname);
+                newUser.setPhone(phone);
+                newUser.setLogin(login);
+                String salt = pp.getSalt();
+                newUser.setSalt(salt);
+                password = pp.passwordEncript(password, salt);
+                newUser.setPassword(password);
+                userFacade.create(newUser);
+                Role userRole = roleFacade.findByRoleName("USER");
+                UserRoles ur = new UserRoles();
+                ur.setRole(userRole);
+                ur.setUser(newUser);
+                userRolesFacade.create(ur);
+                job.add("status", true);
+                    job.add("info", "Новый пользователь добавлен");
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println(job.build().toString());
+                    }
+                break;
         }
         
     }

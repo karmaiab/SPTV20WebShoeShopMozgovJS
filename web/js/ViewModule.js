@@ -100,7 +100,7 @@ class ViewModule{
         document.getElementById("info").innerHTML = '';
         const content = document.getElementById('content');
         content.innerHTML =`<div class="card border-primary mb-3 mx-auto" style="max-width: 30rem;">
-                                <h3 class="card-header text-center">Новый пользователь</h3>
+                                <h3 class="card-header text-center">New Account</h3>
                                 <div class="card-body">
                                   <div class="form-group">
                                     <label for="firstname" class="form-label mt-4">Name</label>
