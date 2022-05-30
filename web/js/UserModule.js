@@ -2,7 +2,6 @@ import {viewModule} from './ViewModule.js';
 import {loginModule} from './LoginModule.js';
 import {adminModule} from './AdminModule.js';
 
-
 class UserModule{
     sendNewAccountData(){
         let promiseSentAccount = fetch('addNewAccount',{
@@ -13,7 +12,6 @@ class UserModule{
                           .then(response =>{
                               if(response.status){
                                   document.getElementById('info').innerHTML = response.info;
-                                  userModule.getListAccountData();
                               }else{
                                   document.getElementById('info').innerHTML = response.info;
                               }
