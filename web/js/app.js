@@ -26,10 +26,11 @@ menu_admin_panel.addEventListener("click",(e)=>{
     viewModule.showAdminPanelForm(adminModule.getUsersMap(), adminModule.getRoles());
 });
 
-const menu_edit = document.getElementById("menu_edit");
-menu_edit.addEventListener("click", (e) =>{
+const menu_edit_m = document.getElementById("menu_edit_m");
+menu_edit_m.addEventListener("click", (e) =>{
     e.preventDefault();
     toggleActiveMenu(e.target.id);
+    viewModule.showEditModel();
 });
 
 const menu_login = document.getElementById("menu_login");
@@ -57,6 +58,13 @@ menu_profile.addEventListener("click", (e)=>{
     toggleActiveMenu(e.target.id);
 });
 
+const menu_edit_p = document.getElementById("menu_edit_p");
+menu_edit_p.addEventListener("click", (e)=> {
+    e.preventDefault();
+    toggleActiveMenu(e.target.id);
+    viewModule.showEditProfile();
+})
+
 function toggleActiveMenu(selectedElementId){
     const listNavlinks = document.getElementsByClassName("nav-link");
     for(let i = 0; i < listNavlinks.length; i++){
@@ -78,8 +86,8 @@ function checkMenuPanel(){
         if(!document.getElementById('menu_add').classList.contains('d-none')){
             document.getElementById('menu_add').classList.add('d-none');
         }
-        if(!document.getElementById('menu_edit').classList.contains('d-none')){
-            document.getElementById('menu_edit').classList.add('d-none');
+        if(!document.getElementById('menu_edit_m').classList.contains('d-none')){
+            document.getElementById('menu_edit_m').classList.add('d-none');
         }
         if(!document.getElementById('menu_admin').classList.contains('d-none')){
             document.getElementById('menu_admin').classList.add('d-none');
@@ -96,6 +104,9 @@ function checkMenuPanel(){
         if(!document.getElementById('menu_profile').classList.contains('d-none')){
             document.getElementById('menu_profile').classList.add('d-none');
         }
+        if(!document.getElementById('menu_edit_p').classList.contains('d-none')){
+            document.getElementById('menu_edit_p').classList.add('d-none');
+        }
         return;
     }
     role = JSON.parse(role);
@@ -103,8 +114,8 @@ function checkMenuPanel(){
         if(!document.getElementById('menu_add').classList.contains('d-none')){
             document.getElementById('menu_add').classList.add('d-none');//Hide add oanel
         }
-        if(!document.getElementById('menu_edit').classList.contains('d-none')){
-            document.getElementById('menu_edit').classList.add('d-none');//Hide edit panel
+        if(!document.getElementById('menu_edit_m').classList.contains('d-none')){
+            document.getElementById('menu_edit_m').classList.add('d-none');//Hide edit panel
         }
         if(!document.getElementById('menu_admin').classList.contains('d-none')){
             document.getElementById('menu_admin').classList.add('d-none');//Hide admin panel
@@ -121,14 +132,17 @@ function checkMenuPanel(){
         if(document.getElementById('menu_profile').classList.contains('d-none')){
             document.getElementById('menu_profile').classList.remove('d-none');//Show profile menu
         }
+        if(!document.getElementById('menu_edit_p').classList.contains('d-none')){
+            document.getElementById('menu_edit_p').classList.remove('d-none');//Hide edit profile menu
+        }
         return;
     }
     if(role.roleName === 'ADMINISTRATOR'){
         if(document.getElementById('menu_add').classList.contains('d-none')){
             document.getElementById('menu_add').classList.remove('d-none');//Show add panel
         }
-        if(document.getElementById('menu_edit').classList.contains('d-none')){
-            document.getElementById('menu_edit').classList.remove('d-none');//Show edit panel
+        if(document.getElementById('menu_edit_m').classList.contains('d-none')){
+            document.getElementById('menu_edit_m').classList.remove('d-none');//Show edit panel
         }
         if(document.getElementById('menu_admin').classList.contains('d-none')){
             document.getElementById('menu_admin').classList.remove('d-none');//Show admin panel
@@ -144,6 +158,9 @@ function checkMenuPanel(){
         }
         if(document.getElementById('menu_profile').classList.contains('d-none')){
             document.getElementById('menu_profile').classList.remove('d-none');//Show profile menu
+        }
+        if(document.getElementById('menu_edit_p').classList.contains('d-none')){
+            document.getElementById('menu_edit_p').classList.remove('d-none');//Show edit profile menu
         }
         return;
     }

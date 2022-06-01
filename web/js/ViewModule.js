@@ -54,15 +54,19 @@ class ViewModule{
                         <input type="text" class="form-control" id="url" name="url" placeholder="Model">
                       </div>
                       <div class="form-group">
-                        <label for="login" class="form-label mt-4">size</label>
+                        <label for="login" class="form-label mt-4">Size</label>
                         <input type="text" class="form-control" id="login" name="login" placeholder="Size">
                       </div>
                       <div class="form-group">
-                        <label for="password" class="form-label mt-4">price</label>
+                        <label for="password" class="form-label mt-4">Price</label>
                         <input type="text" class="form-control" id="password" name="password" placeholder="Price">
                       </div>
                       <div class="form-group">
-                        <label for="imageFile" class="form-label mt-4">Pic</label>
+                        <label for="password" class="form-label mt-4">In Stock</label>
+                        <input type="text" class="form-control" id="password" name="password" placeholder="In Stock">
+                      </div>
+                      <div class="form-group">
+                        <label for="imageFile" class="form-label mt-4">Image</label>
                         <input class="form-control" type="file" id="image_file" name="imageFile">
                       </div>  
                       <div class="w-100 text-center my-3">
@@ -167,7 +171,96 @@ class ViewModule{
         })
     }
     
+    showEditModel(){
+        document.getElementById("info").innerHTML = '';
+        const content = document.getElementById('content');
+        content.innerHTML = `<div class="card border-primary mb-3 mx-auto" style="max-width: 40rem;">
+                <form id="form_add_accound">
+                    <h3 class="card-header text-center my-3">Edit Model</h3>
+                    <div class="card-body">
+                      <div class="form-group">
+                        <label for="exampleSelect1" class="form-label mt-4">Model</label>
+                        <select class="form-select" id="exampleSelect1">
+                          <option>#</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="model" class="form-label mt-4">Model Name</label>
+                        <input type="text" class="form-control" id="#" name="#" placeholder="Model Name">
+                      </div>
+                      <div class="form-group">
+                        <label for="brand" class="form-label mt-4">Brand</label>
+                        <input type="text" class="form-control" id="#" name="#" placeholder="Brand">
+                      </div>
+                      <div class="form-group">
+                        <label for="size" class="form-label mt-4">Size</label>
+                        <input type="text" class="form-control" id="#" name="#" placeholder="Size">
+                      </div>
+                      <div class="form-group">
+                        <label for="price" class="form-label mt-4">Price</label>
+                        <input type="text" class="form-control" id="#" name="#" placeholder="Price">
+                      </div>
+                      <div class="form-group">
+                        <label for="stock" class="form-label mt-4">In Stock</label>
+                        <input type="text" class="form-control" id="#" name="#" placeholder="In Stock">
+                      </div>
+                      <div class="form-group">
+                        <label for="imageFile" class="form-label mt-4">Image</label>
+                        <input class="form-control" type="file" id="image_file" name="imageFile">
+                      </div>  
+                      <div class="w-100 text-center my-3">
+                        <button type="submit" class="btn btn-primary my-3" id="btn_edit_model">Edit</button>
+                      </div>
+                    </div>
+                </form>
+            </div>`;
+    }
     
+    showEditProfile(){
+        document.getElementById("info").innerHTML = '';
+        const content = document.getElementById('content');
+        content.innerHTML = `<div class="card border-primary mb-3 mx-auto" style="max-width: 40rem;">
+                <form id="form_add_accound">
+                    <h3 class="card-header text-center my-3">Edit Account</h3>
+                    <div class="card-body">
+                      <div class="form-group">
+                        <label for="exampleSelect1" class="form-label mt-4">Account</label>
+                        <select class="form-select" id="exampleSelect1">
+                          <option>#</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="url" class="form-label mt-4">First Name</label>
+                        <input type="text" class="form-control" id="#" name="#" placeholder="First Name">
+                      </div>
+                      <div class="form-group">
+                        <label for="url" class="form-label mt-4">Last Name</label>
+                        <input type="text" class="form-control" id="#" name="#" placeholder="Last Name">
+                      </div>
+                      <div class="form-group">
+                        <label for="login" class="form-label mt-4">Phone</label>
+                        <input type="text" class="form-control" id="#" name="#" placeholder="Phone">
+                      </div>
+                      <div class="form-group">
+                        <label for="password" class="form-label mt-4">Login</label>
+                        <input type="text" class="form-control" id="#" name="#" placeholder="Login">
+                      </div>
+                      <div class="form-group">
+                        <label for="password" class="form-label mt-4">Password</label>
+                        <input type="password" class="form-control" id="#" name="#" placeholder="Password">
+                      </div> 
+                      <div class="form-group">
+                        <label for="password1" class="form-label mt-4">Repeat Password</label>
+                        <input type="password" class="form-control" id="#" name="#" placeholder="Repeat Password">
+                      </div> 
+                      <div class="w-100 text-center my-3">
+                        <button type="submit" class="btn btn-primary my-3" id="btn_edit_account">Edit</button>
+                      </div>
+                    </div>
+                </form>
+            </div>`;
+        
+    }
     
 }
 const viewModule = new ViewModule();
