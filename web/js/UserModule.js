@@ -3,10 +3,10 @@ import {loginModule} from './LoginModule.js';
 import {adminModule} from './AdminModule.js';
 
 class UserModule{
-    sendNewAccountData(){
-        let promiseSentAccount = fetch('addNewAccount',{
+    sendNewModel(){
+        let promiseSentAccount = fetch('addNewModel',{
             method: 'POST',
-            body: new FormData(document.getElementById('form_add_accound'))
+            body: new FormData(document.getElementById('form_add_model'))
         });
         promiseSentAccount.then(response => response.json())
                           .then(response =>{
@@ -17,32 +17,28 @@ class UserModule{
                               }
                           })
                           .catch(error => {
-                              document.getElementById('info').innerHTML = "Ошибка сервера (showAddAccountForm)"+error;
+                              document.getElementById('info').innerHTML = "Ошибка сервера (showAddModel)"+error;
                           })
     }
-    getListAccountData(){
-        const user = JSON.parse(sessionStorage.getItem('user'));
-        if(user === null){
-            document.getElementById('content').innerHTML = '';
-            document.getElementById('info').innerHTML = 'Авторизуйтесь!';
-            viewModule.showLoginForm();
-            return;
-        }
-        
-        let promiseGetListAccountData = fetch('getListAccountData?userId='+user.id+'&t='+Date.now(),{
-            method: 'GET',
+    getListModel(){
+        let promiseSentAccount = fetch('getListModel',{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset:utf8'
+            },
+            credentials: 'include',
         });
-        promiseGetListAccountData.then(response => response.json())
+        promiseSentAccount.then(response => response.json())
                           .then(response =>{
                               if(response.status){
                                   document.getElementById('info').innerHTML = response.info;
-                                  viewModule.showListAccountsData(response.listAccountData);
+                                  viewModule.showListModel(response.Model)
                               }else{
                                   document.getElementById('info').innerHTML = response.info;
                               }
                           })
                           .catch(error => {
-                              document.getElementById('info').innerHTML = "Ошибка сервера (showAddAccountForm)"+error;
+                              document.getElementById('info').innerHTML = "Ошибка сервера (getListModel)"+error;
                           })
     }
 }

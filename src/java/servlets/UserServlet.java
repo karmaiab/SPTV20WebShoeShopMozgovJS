@@ -37,7 +37,7 @@ import tools.PasswordProtected;
  * @author User
  */
 @WebServlet(name = "UserServlet", urlPatterns = {
-    "/getListAccountData",
+    "/getListModel",
     "/addNewAccount",
 
 })
@@ -84,17 +84,10 @@ public class UserServlet extends HttpServlet {
         }
         String path = request.getServletPath();
         switch (path) {
-            case "/getListAccountData":
-                String userId = request.getParameter("userId");
-                if(!userId.equals(authUser.getId().toString())){
-                    job.add("listAccountData", "")
-                       .add("status", false)
-                       .add("info", "You are not the person on the account");
-                    break;
-                }
+            case "/getListModel":
                 List<AccountData> listAccountData = accountDataFacade.findAll(authUser);
                 if(listAccountData.isEmpty()){
-                    job.add("listAccountData", "");
+                    job.add("listModel", "");
                     job.add("status", true).add("info", "List is empty");
                     try (PrintWriter out = response.getWriter()) {
                       out.println(job.build().toString());
@@ -102,7 +95,7 @@ public class UserServlet extends HttpServlet {
                     break;
                 }
                 AccountDataJsonBuilder adjb = new AccountDataJsonBuilder();
-                job.add("listAccountData", adjb.getJsonArrayAccountData(listAccountData));
+                job.add("listModel", adjb.getJsonArrayAccountData(listAccountData));
                 job.add("status", true).add("info", "");
                 try (PrintWriter out = response.getWriter()) {
                   out.println(job.build().toString());

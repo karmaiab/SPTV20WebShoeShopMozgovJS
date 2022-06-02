@@ -37,7 +37,7 @@ class ViewModule{
             viewModule.showRegistrationForm();
         })
     }
-    showAddAccountForm(){
+    showAddModel(){
         document.getElementById("info").innerHTML = '';
         const content = document.getElementById('content');
         content.innerHTML = 
@@ -70,14 +70,15 @@ class ViewModule{
                         <input class="form-control" type="file" id="image_file" name="imageFile">
                       </div>  
                       <div class="w-100 text-center my-3">
-                        <button type="submit" class="btn btn-primary my-3" id="btn_add_account">Add</button>
+                        <button type="submit" class="btn btn-primary my-3" id="btn_add_model">Add</button>
                       </div>
                     </div>
                 </form>
             </div>`;
-        document.getElementById('form_add_accound').addEventListener('submit', (e)=>{
+        
+        document.getElementById('form_add_model').addEventListener('submit', (e)=>{
             e.preventDefault();
-            userModule.sendNewAccountData();
+            userModule.sendNewModel();
         });
         
     }
@@ -110,23 +111,23 @@ class ViewModule{
         });
     }
     
-    showListAccountsData(listAccountData){
+    showListModel(listModel){
         let content = document.getElementById('content');
         content.innerHTML = "";
         let list = document.createElement('div');
         list.classList.add('d-flex');
         list.classList.add('justify-content-center');
         content.appendChild(list);
-        for(let i = 0; i < listAccountData.length; i++){
+        for(let i = 0; i < listModel.length; i++){
             list.innerHTML +=  
             `<div class="card border-primary m-3 p-2" style="max-width: 18rem;">
-                <h3 class="card-header text-center my-3">${listAccountData[i].caption}</h3>
-                <img src="insertFile/${listAccountData[i].pathToImage}" class="card-img-top" style="max-height: 20rem;" alt="...">
+                <h3 class="card-header text-center my-3">${listModel[i].caption}</h3>
+                <img src="insertFile/${listModel[i].pathToImage}" class="card-img-top" style="max-height: 20rem;" alt="...">
                 <div class="card-body">
-                    <p class="card-text'>Brand: ${listAccountData[i].caption}</p>
-                    <p class="card-text'>Brand: ${listAccountData[i].url}</p>
-                    <p class="card-text">Size: ${listAccountData[i].login}</p>
-                    <p class="card-text">Price: ${listAccountData[i].password}</p>
+                    <p class="card-text'>Brand: ${listModel[i].caption}</p>
+                    <p class="card-text'>Brand: ${listModel[i].url}</p>
+                    <p class="card-text">Size: ${listModel[i].login}</p>
+                    <p class="card-text">Price: ${listModel[i].password}</p>
                 </div>
             </div>`
         }

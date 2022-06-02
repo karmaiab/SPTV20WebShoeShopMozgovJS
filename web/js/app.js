@@ -16,7 +16,7 @@ const menu_add = document.getElementById("menu_add");
 menu_add.addEventListener("click", (e)=>{
     e.preventDefault();
     toggleActiveMenu(e.target.id);
-    viewModule.showAddAccountForm();
+    viewModule.showAddModel();
 });
 
 const menu_admin_panel = document.getElementById("menu_admin");
