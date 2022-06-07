@@ -5,19 +5,17 @@
  */
 package session;
 
-import entity.AccountData;
-import entity.User;
-import java.util.List;
+import entity.History;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 /**
  *
- * @author User
+ * @author angel
  */
 @Stateless
-public class AccountDataFacade extends AbstractFacade<AccountData> {
+public class HistoryFacade extends AbstractFacade<History> {
 
     @PersistenceContext(unitName = "SPTV20WebShoeShopMozgovJSPU")
     private EntityManager em;
@@ -27,13 +25,8 @@ public class AccountDataFacade extends AbstractFacade<AccountData> {
         return em;
     }
 
-    public AccountDataFacade() {
-        super(AccountData.class);
+    public HistoryFacade() {
+        super(History.class);
     }
     
-    public List<AccountData> findAll(User user) {
-        return em.createQuery("SELECT ad FROM AccountData ad WHERE ad.user = :user")
-                .setParameter("user", user)
-                .getResultList();
-    }
 }

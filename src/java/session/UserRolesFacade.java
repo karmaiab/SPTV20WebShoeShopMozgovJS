@@ -16,12 +16,11 @@ import javax.persistence.PersistenceContext;
 
 /**
  *
- * @author User
+ * @author angel
  */
 @Stateless
 public class UserRolesFacade extends AbstractFacade<UserRoles> {
     @EJB RoleFacade roleFacade;
-
     @PersistenceContext(unitName = "SPTV20WebShoeShopMozgovJSPU")
     private EntityManager em;
 
@@ -33,6 +32,8 @@ public class UserRolesFacade extends AbstractFacade<UserRoles> {
     public UserRolesFacade() {
         super(UserRoles.class);
     }
+    
+    
     public String getRoleNameUser(User user) {
         try {
             List<String> listRoleName = em.createQuery("SELECT ur.role.roleName FROM UserRoles ur WHERE ur.user = :user")
@@ -40,6 +41,8 @@ public class UserRolesFacade extends AbstractFacade<UserRoles> {
                     .getResultList();
             if(listRoleName.contains("ADMINISTRATOR")){
                 return "ADMINISTRATOR";
+            }else if(listRoleName.contains("MANAGER")){
+                return "MANAGER";
             }else if(listRoleName.contains("USER")){
                 return "USER";
             }else{
@@ -55,10 +58,13 @@ public class UserRolesFacade extends AbstractFacade<UserRoles> {
                     .setParameter("user", user)
                     .getResultList();
             Role roleAdmin = roleFacade.findByRoleName("ADMINISTRATOR");
+            Role roleManager = roleFacade.findByRoleName("MANAGER");
             Role roleUser = roleFacade.findByRoleName("USER");
             
             if(listRoles.contains(roleAdmin)){
                 return roleAdmin;
+            }else if(listRoles.contains(roleManager)){
+                return roleManager;
             }else if(listRoles.contains(roleUser)){
                 return roleUser;
             }else{
@@ -69,12 +75,46 @@ public class UserRolesFacade extends AbstractFacade<UserRoles> {
         }
     }
 
-    public void setUserRole(User user, Role role) {
+    public void setRoleToUser(Role role, User user) {
         removeRolesToUser(user);
-        UserRoles ur = new UserRoles();
-        ur.setRole(role);
-        ur.setUser(user);
-        super.create(ur);
+        UserRoles userRoles=null;
+        if("ADMINISTRATOR".equals(role.getRoleName())){
+            Role roleUSER = roleFacade.findByRoleName("USER");
+            userRoles = new UserRoles();
+            userRoles.setRole(roleUSER);
+            userRoles.setUser(user);
+            this.create(userRoles);
+            Role roleMANAGER = roleFacade.findByRoleName("MANAGER");
+            userRoles = new UserRoles();
+            userRoles.setRole(roleMANAGER);
+            userRoles.setUser(user);
+            this.create(userRoles);
+            Role roleADMINISTRATOR = roleFacade.findByRoleName("ADMINISTRATOR");
+            userRoles = new UserRoles();
+            userRoles.setRole(roleADMINISTRATOR);
+            userRoles.setUser(user);
+            this.create(userRoles);
+        }
+        if("MANAGER".equals(role.getRoleName())){
+            Role roleUSER = roleFacade.findByRoleName("USER");
+            userRoles = new UserRoles();
+            userRoles.setRole(roleUSER);
+            userRoles.setUser(user);
+            this.create(userRoles);
+            Role roleMANAGER = roleFacade.findByRoleName("MANAGER");
+            userRoles = new UserRoles();
+            userRoles.setRole(roleMANAGER);
+            userRoles.setUser(user);
+            this.create(userRoles);
+        }
+        if("USER".equals(role.getRoleName())){
+           Role roleUSER = roleFacade.findByRoleName("USER");
+            userRoles = new UserRoles();
+            userRoles.setRole(roleUSER);
+            userRoles.setUser(user);
+            this.create(userRoles);
+        }
+        
     }
 
     private void removeRolesToUser(User user) {
@@ -94,6 +134,4 @@ public class UserRolesFacade extends AbstractFacade<UserRoles> {
         }
         
     }
-    
 }
-    

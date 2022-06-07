@@ -1,55 +1,51 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package servlets;
 
-import entity.AccountData;
+import entity.History;
+import entity.Model;
 import entity.User;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.util.Calendar;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.json.Json;
+import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonReader;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
-import jsonbuilders.AccountDataJsonBuilder;
-import session.AccountDataFacade;
-import session.RoleFacade;
+import jsontools.UserJsonBuilder;
+import jsontools.ModelJsonBuilder;
+import session.HistoryFacade;
+import session.ModelFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
 import tools.PasswordProtected;
 
 /**
  *
- * @author User
+ * @author user
  */
 @WebServlet(name = "UserServlet", urlPatterns = {
-    "/getListModel",
-    "/addNewAccount",
-
+    "/editProfile",
+    "/buyShoe",
+    "/getListBuyModels"
+    
 })
-@MultipartConfig
 public class UserServlet extends HttpServlet {
     @EJB private UserFacade userFacade;
-    @EJB private RoleFacade roleFacade;
+    @EJB private HistoryFacade historyFacade;
     @EJB private UserRolesFacade userRolesFacade;
-    @EJB private AccountDataFacade accountDataFacade;
+    @EJB private ModelFacade modelFacade;
     
     private PasswordProtected pp = new PasswordProtected();
-
+    
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -66,7 +62,7 @@ public class UserServlet extends HttpServlet {
         JsonObjectBuilder job = Json.createObjectBuilder();
         HttpSession session = request.getSession(false);
         if(session == null){
-            job.add("info", "You are not authorized");
+            job.add("info", "Вы не авторизованы");
                     job.add("auth", false);
                     try (PrintWriter out = response.getWriter()) {
                         out.println(job.build().toString());
@@ -75,7 +71,15 @@ public class UserServlet extends HttpServlet {
         }
         User authUser = (User) session.getAttribute("authUser");
         if(authUser == null){
-            job.add("info", "You are not authorized");
+            job.add("info", "Вы не авторизованы");
+                    job.add("auth", false);
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println(job.build().toString());
+                    }
+                    return;
+        }
+        if(!userRolesFacade.isRole("USER",authUser)){
+            job.add("info", "У вас нет необходимых разрешений");
                     job.add("auth", false);
                     try (PrintWriter out = response.getWriter()) {
                         out.println(job.build().toString());
@@ -84,77 +88,79 @@ public class UserServlet extends HttpServlet {
         }
         String path = request.getServletPath();
         switch (path) {
-            case "/getListModel":
-                List<AccountData> listAccountData = accountDataFacade.findAll(authUser);
-                if(listAccountData.isEmpty()){
-                    job.add("listModel", "");
-                    job.add("status", true).add("info", "List is empty");
+            case "/getListBuyModels"://Выдача списка обуви
+                List<Model> models = modelFacade.findAll();
+                ModelJsonBuilder mjb = new ModelJsonBuilder();
+                if(!models.isEmpty()) {
+                    job.add("status", true)
+                        .add("options", mjb.getJsonArrayModel(models));
+                }
+                try(PrintWriter out = response.getWriter()) {
+                    out.println(job.build().toString());
+                }
+                break;
+            case "/buyShoe":
+                JsonReader jsonReader = Json.createReader(request.getReader());//Покупка обуви
+                JsonObject jo = jsonReader.readObject();
+                String id = jo.getString("id");
+                Model currentModel = modelFacade.find(Long.parseLong(id));
+                if(Integer.parseInt(authUser.getMoney())<currentModel.getPrice()){
+                    job.add("info", "У вас не хватает средств");
+                    job.add("status", false);
                     try (PrintWriter out = response.getWriter()) {
-                      out.println(job.build().toString());
-                    } 
+                       out.println(job.build().toString());
+                    }
                     break;
                 }
-                AccountDataJsonBuilder adjb = new AccountDataJsonBuilder();
-                job.add("listModel", adjb.getJsonArrayAccountData(listAccountData));
-                job.add("status", true).add("info", "");
+                currentModel.setAmount(currentModel.getAmount()-1);
+                authUser.setMoney(Integer.toString(Integer.parseInt(authUser.getMoney())-currentModel.getPrice()));
+                History history = new History();
+                history.setModel(currentModel);
+                history.setPurchaseModel(Calendar.getInstance().getTime());
+                history.setUser(authUser);
+                modelFacade.edit(currentModel);
+                userFacade.edit(authUser);
+                historyFacade.create(history);
+                job.add("info", "Обувь "+currentModel.getName()+" успешно куплена");
+                job.add("status", true);
                 try (PrintWriter out = response.getWriter()) {
-                  out.println(job.build().toString());
+                   out.println(job.build().toString());
                 } 
                 break;
-            case "/addNewAccount":
-               Part part = request.getPart("imageFile");
-               StringBuilder pathToUploadUserDir = new StringBuilder(); 
-               pathToUploadUserDir.append("D:\\uploadDir\\SPTV20WebShoeShopMozgovJS") 
-                                  .append(File.separator)
-                                  .append(authUser.getId().toString()); 
-               File mkDirFile = new File(pathToUploadUserDir.toString());
-               mkDirFile.mkdirs();
-               StringBuilder pathToUploadFile = new StringBuilder();
-               pathToUploadFile.append(pathToUploadUserDir.toString())
-                               .append(File.separator)
-                               .append(getFileName(part));
-               File file = new File(pathToUploadFile.toString()); 
-               try(InputStream fileContent = part.getInputStream()){ 
-                    Files.copy(
-                            fileContent, 
-                            file.toPath(), 
-                            StandardCopyOption.REPLACE_EXISTING 
-                    );
+            case "/editProfile":
+                JsonReader jsonReader1 = Json.createReader(request.getReader());//Изменнение профиля
+                JsonObject jo1 = jsonReader1.readObject();
+                int id1 = jo1.getInt("id");
+                String newFirstname = jo1.getString("newFirstname","");
+                String newLastname = jo1.getString("newLastname","");
+                String newPhone = jo1.getString("newPhone","");
+                String newMoney = jo1.getString("newMoney","");
+                User newUser = userFacade.find((long)id1);
+                if(newUser == null){
+                    job.add("info", "Нет такого пользователя");
+                    job.add("status", false);
+                    try (PrintWriter out = response.getWriter()) {
+                       out.println(job.build().toString());
+                    }
                 }
-  
-               String caption = request.getParameter("caption");
-               String url = request.getParameter("url");
-               String login = request.getParameter("login");
-               String password = request.getParameter("password");
-               AccountData accountData = new AccountData();
-               accountData.setCaption(caption);
-               accountData.setLogin(login);
-               accountData.setPassword(password);
-               accountData.setUrl(url);
-               accountData.setPathToImage(pathToUploadFile.toString());
-               accountData.setUser(authUser);
-               accountDataFacade.create(accountData);
-               job.add("info", "Added new model");
-               job.add("status", true);
-               try (PrintWriter out = response.getWriter()) {
-                  out.println(job.build().toString());
-               }
-               break;
+                newUser.setFirstName(newFirstname);
+                newUser.setLastName(newLastname);
+                newUser.setPhone(newPhone);
+                newUser.setMoney(Integer.toString(Integer.parseInt(authUser.getMoney())+Integer.parseInt(newMoney)));
+                userFacade.edit(newUser);
+                session.setAttribute("authUser", newUser);
+                job.add("info", "Профиль пользователя "+newUser.getUsername()+" успешно изменен");
+                job.add("status", true);
+                job.add("user", new UserJsonBuilder().getJsonUser(newUser));
+                try (PrintWriter out = response.getWriter()) {
+                   out.println(job.build().toString());
+                } 
+                
+                break;
         }
         
     }
-    private String getFileName(Part part){
-        final String partHeader = part.getHeader("content-disposition");
-        for (String content : part.getHeader("content-disposition").split(";")){
-            if(content.trim().startsWith("filename")){
-                return content
-                        .substring(content.indexOf('=')+1)
-                        .trim()
-                        .replace("\"",""); 
-            }
-        }
-        return null;
-    }
+
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

@@ -63,7 +63,7 @@ menu_edit_p.addEventListener("click", (e)=> {
     e.preventDefault();
     toggleActiveMenu(e.target.id);
     viewModule.showEditProfile();
-})
+});
 
 function toggleActiveMenu(selectedElementId){
     const listNavlinks = document.getElementsByClassName("nav-link");

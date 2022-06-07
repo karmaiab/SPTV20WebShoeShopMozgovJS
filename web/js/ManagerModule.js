@@ -1,11 +1,10 @@
+import {checkMenuPanel} from './index.js';
 import {viewModule} from './ViewModule.js';
-class UserModule{
-    
 
-    
-    
-    getListBuyModels() {
-        let promiseListModels = fetch('getListBuyModels', {
+class ManagerModule{
+      
+        getListModels() {
+        let promiseListModels = fetch('getListModels', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json;charset:utf8'
@@ -14,12 +13,12 @@ class UserModule{
         promiseListModels.then(response => response.json())
                 .then(response => {
                     if(response.status) {
-                        viewModule.showBuyModel();
+                        viewModule.showEditModel();
                         let modelSelect = document.getElementById('select_models');
                         modelSelect.options.length = 0;
                         let option = null;
                         option = document.createElement('option');
-                        option.text = "--Выберите модель--";
+                        option.text = "SELECT";
                         option.value = '';
                         modelSelect.add(option);
                         for (let i = 0; i < response.options.length; i++) {
@@ -42,70 +41,63 @@ class UserModule{
                     document.getElementById('info').innerHTML = "Список моделей пуст";
                 });
     }    
+        
+        
+    sendNewModel(){
+        let promiseCreateModel = fetch('newModel',{
+            method: 'POST',
+            body: new FormData(document.getElementById('form_add_model'))
+        });
+        promiseCreateModel.then(response => response.json())
+                          .then(response =>{
+                              if(response.status){
+                                  document.getElementById('info').innerHTML = response.info;
+                              }else{
+                                  document.getElementById('info').innerHTML = response.info;
+                              }
+                          })
+                          .catch(error => {
+                              document.getElementById('info').innerHTML = "Ошибка сервера (sendNewModel)"+error;
+                          });
+    }
     
-    buyShoe(){
+    editModel(){
         const id = document.getElementById('select_models').value;
-        const buyShoe = {
-            "id":id
+        const newName = document.getElementById('name').value;
+        const newBrand = document.getElementById('brand').value;
+        const newSize = document.getElementById('size').value;
+        const newQuantity = document.getElementById('quantity').value;
+        const newPrice = document.getElementById('price').value;
+        const changeModel = {
+            "id": id,
+            "newName": newName,
+            "newBrand": newBrand,
+            "newSize": newSize,
+            "newQuantity": newQuantity,
+            "newPrice": newPrice
         };
-        let promiseBuyShoe = fetch('buyShoe',{
+        let promiseChangeModel = fetch('editModel',{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json;charset:utf8'
             },
             credentials: 'include',
-            body: JSON.stringify(buyShoe)
+            body: JSON.stringify(changeModel)
         });
-        promiseBuyShoe.then(response => response.json())
+        promiseChangeModel.then(response => response.json())
                           .then(response =>{
                               if(response.status){
                                   document.getElementById('info').innerHTML = response.info;
+                                  managerModule.getListModels();
                               }else{
                                   document.getElementById('info').innerHTML = response.info;
                               }
                           })
                           .catch(error => {
-                              document.getElementById('info').innerHTML = "Ошибка сервера (buyShoe)"+error;
+                              document.getElementById('info').innerHTML = "Ошибка сервера (changeModel)"+error;
                           });
     }
-
-    editProfile(){
-        const authUser = JSON.parse(sessionStorage.getItem('user'));
-        const newFirstname = document.getElementById('firstname').value;
-        const newLastname = document.getElementById('lastname').value;
-        const newPhone = document.getElementById('phone').value;
-        const newMoney = document.getElementById('money').value;
-        const changeUser = {
-            "id": authUser.id,
-            "newFirstname": newFirstname,
-            "newLastname": newLastname,
-            "newPhone": newPhone,
-            "newMoney": newMoney
-        };
-        let promiseChangeProfile = fetch('editProfile',{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json;charset:utf8'
-            },
-            credentials: 'include',
-            body: JSON.stringify(changeUser)
-        });
-        promiseChangeProfile.then(response => response.json())
-                          .then(response =>{
-                              if(response.status){
-                                  sessionStorage.setItem('user',JSON.stringify(response.user));
-                                  viewModule.showProfile();
-                                  document.getElementById('info').innerHTML = response.info;
-                              }else{
-                                  document.getElementById('info').innerHTML = response.info;
-                              }
-                          })
-                          .catch(error => {
-                              document.getElementById('info').innerHTML = "Ошибка сервера (editProfile)"+error;
-                          });
-    }
+    
 }
-const userModule = new UserModule();
-export {userModule};
-
-
+const managerModule = new ManagerModule();
+export {managerModule};

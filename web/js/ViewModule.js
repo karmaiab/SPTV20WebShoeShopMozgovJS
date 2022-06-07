@@ -1,6 +1,7 @@
 import {loginModule} from './LoginModule.js';
 import {userModule} from './UserModule.js';
 import {adminModule} from './AdminModule.js';
+import {managerModule} from './ManagerModule.js';
 
 class ViewModule{
     showLoginForm(){
@@ -9,7 +10,7 @@ class ViewModule{
             <h3 class="card-header text-center">Авторизация</h3>
             <div class="card-body">
                 <div class="form-group">
-                    <label for="login" class="form-label mt-4">Логин</label>
+                    <label for="login" class="form-label mt-4">Login</label>
                     <input type="text" class="form-control" id="login" placeholder="Login">
                 </div>
                 <div class="form-group">
@@ -19,7 +20,7 @@ class ViewModule{
             </div>
             <button id="btnLogin" type="submit" class="btn btn-primary m-3">Sign in</button>
             <p class="info">No account? <a class="text-info" id="registration">Register</a></p>
-        </div>`
+        </div>`;
         document.getElementById('password').addEventListener('keypress',(e)=>{
             if(e.key === 'Enter'){
                 e.preventDefault();
@@ -35,7 +36,7 @@ class ViewModule{
         registration.addEventListener('click', (e)=>{
             e.preventDefault();
             viewModule.showRegistrationForm();
-        })
+        });
     }
     showAddModel(){
         document.getElementById("info").innerHTML = '';
@@ -70,7 +71,7 @@ class ViewModule{
                         <input class="form-control" type="file" id="image_file" name="imageFile">
                       </div>  
                       <div class="w-100 text-center my-3">
-                        <button type="submit" class="btn btn-primary my-3" id="btn_add_model">Add</button>
+                        <button type="submit" class="btn btn-primary my-3" id="btn_add_model">Add Model</button>
                       </div>
                     </div>
                 </form>
@@ -78,7 +79,7 @@ class ViewModule{
         
         document.getElementById('form_add_model').addEventListener('submit', (e)=>{
             e.preventDefault();
-            userModule.sendNewModel();
+            managerModule.sendNewModel();
         });
         
     }
@@ -105,7 +106,7 @@ class ViewModule{
                 <button id="btnSetRole" type="submit" class="btn btn-primary m-3">Назначить роль</button>
             </div>`;
         
-        document.getElementById('btnSetRole').addEventListener('click',(e)=>{
+        document.getElementById('btnSetRole').addEventListener('click', (e)=>{
             e.preventDefault();
             adminModule.setNewRole();
         });
@@ -121,15 +122,15 @@ class ViewModule{
         for(let i = 0; i < listModel.length; i++){
             list.innerHTML +=  
             `<div class="card border-primary m-3 p-2" style="max-width: 18rem;">
-                <h3 class="card-header text-center my-3">${listModel[i].caption}</h3>
+                <h3 class="card-header text-center my-3">${listModel[i].name}</h3>
                 <img src="insertFile/${listModel[i].pathToImage}" class="card-img-top" style="max-height: 20rem;" alt="...">
                 <div class="card-body">
-                    <p class="card-text'>Brand: ${listModel[i].caption}</p>
-                    <p class="card-text'>Brand: ${listModel[i].url}</p>
-                    <p class="card-text">Size: ${listModel[i].login}</p>
-                    <p class="card-text">Price: ${listModel[i].password}</p>
+                    <p class="card-text">Brand: ${listModel[i].brand}</p>
+                    <p class="card-text">Size: ${listModel[i].size}</p>
+                    <p class="card-text">Quantity: ${listModel[i].quantity}</p>
+                    <p class="card-text">Price: ${listModel[i].price}</p>
                 </div>
-            </div>`
+            </div>`;
         }
     }
     showRegistrationForm(){
@@ -169,7 +170,7 @@ class ViewModule{
         btnRegistration.addEventListener('click', (e)=>{
             e.preventDefault();
             loginModule.registrationNewUser();
-        })
+        });
     }
     
     showEditModel(){
@@ -215,6 +216,10 @@ class ViewModule{
                     </div>
                 </form>
             </div>`;
+            document.getElementById('btn_edit_model').addEventListener('click',(e)=>{
+                e.preventDefault();
+                managerModule.editModel();
+            });
     }
     
     showEditProfile(){

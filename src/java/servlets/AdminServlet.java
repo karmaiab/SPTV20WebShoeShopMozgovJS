@@ -5,10 +5,15 @@
  */
 package servlets;
 
+import entity.Model;
 import entity.Role;
 import entity.User;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.json.Json;
@@ -17,12 +22,16 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import jsonbuilders.RoleJsonBuilder;
-import jsonbuilders.UserJsonBuilder;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
+import jsontools.UserJsonBuilder;
+import jsontools.RoleJsonBuilder;
+import session.ModelFacade;
 import session.RoleFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
@@ -30,21 +39,25 @@ import tools.PasswordProtected;
 
 /**
  *
- * @author User
+ * @author user
  */
 @WebServlet(name = "AdminServlet", urlPatterns = {
     "/getRoles",
     "/getUsersMap",
-    "/setUserRole"
-
+    "/setUserRole",
+    
+    
 })
+@MultipartConfig
 public class AdminServlet extends HttpServlet {
     @EJB private UserFacade userFacade;
     @EJB private RoleFacade roleFacade;
     @EJB private UserRolesFacade userRolesFacade;
+    @EJB private ModelFacade modelFacade;
     
     private PasswordProtected pp = new PasswordProtected();
-
+    
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -59,6 +72,32 @@ public class AdminServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
         JsonObjectBuilder job = Json.createObjectBuilder();
+        HttpSession session = request.getSession(false);
+        if(session == null){
+            job.add("info", "Вы не авторизованы");
+                    job.add("auth", false);
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println(job.build().toString());
+                    }
+                    return;
+        }
+        User authUser = (User) session.getAttribute("authUser");
+        if(authUser == null){
+            job.add("info", "Вы не авторизованы");
+                    job.add("auth", false);
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println(job.build().toString());
+                    }
+                    return;
+        }
+        if(!userRolesFacade.isRole("ADMINISTRATOR",authUser)){
+            job.add("info", "У вас нет необходимых разрешений");
+                    job.add("auth", false);
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println(job.build().toString());
+                    }
+                    return;
+        }
         String path = request.getServletPath();
         switch (path) {
             case "/getRoles":
@@ -100,11 +139,19 @@ public class AdminServlet extends HttpServlet {
                     String userId = jo.getString("userId","");
                     String roleId = jo.getString("roleId","");
                     User user = userFacade.find(Long.parseLong(userId));
+                    if("admin".equals(user.getLogin())){
+                        job.add("status",false);
+                        job.add("info", "Этому пользователю изменить роль нет возможности");
+                        try (PrintWriter out = response.getWriter()) {
+                            out.println(job.build().toString());
+                        }
+                        break;
+                    }
                     Role role = roleFacade.find(Long.parseLong(roleId));
-                    userRolesFacade.setUserRole(user,role);
-                    job.add("status",true);
-                    job.add("user", new UserJsonBuilder().getJsonUser(user));
-                    job.add("role", new RoleJsonBuilder().getJsonRole(role));
+                    userRolesFacade.setRoleToUser(role,user);
+                        job.add("status",true);
+                        job.add("user", new UserJsonBuilder().getJsonUser(user));
+                        job.add("role", new RoleJsonBuilder().getJsonRole(role));
                 } catch (IOException | NumberFormatException e) {
                     job.add("status",false);
                 }
@@ -113,9 +160,21 @@ public class AdminServlet extends HttpServlet {
                 }
                 
                 break;
+                
         }
         
-        
+    }
+    private String getFileName(Part part){
+        final String partHeader = part.getHeader("content-disposition");
+        for (String content : part.getHeader("content-disposition").split(";")){
+            if(content.trim().startsWith("filename")){
+                return content
+                        .substring(content.indexOf('=')+1)
+                        .trim()
+                        .replace("\"",""); 
+            }
+        }
+        return null;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

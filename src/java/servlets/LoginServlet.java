@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package servlets;
 
 import entity.Role;
@@ -21,8 +16,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import jsonbuilders.RoleJsonBuilder;
 import jsonbuilders.UserJsonBuilder;
+import jsonbuilders.RoleJsonBuilder;
 import session.RoleFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
@@ -30,32 +25,31 @@ import tools.PasswordProtected;
 
 /**
  *
- * @author User
+ * @author pupil
  */
-@WebServlet(name = "LoginServlet",loadOnStartup = 1, urlPatterns = {
+@WebServlet(name = "LoginServlet", loadOnStartup = 0, urlPatterns = {
     "/login",
     "/logout",
-    "/registration"
-
+    "/registrationUser"
 })
 
 public class LoginServlet extends HttpServlet {
+    @EJB private UserRolesFacade userRolesFacade;
     @EJB private UserFacade userFacade;
     @EJB private RoleFacade roleFacade;
-    @EJB private UserRolesFacade userRolesFacade;
     
     private PasswordProtected pp = new PasswordProtected();
-    
     @Override
-    public void init() throws ServletException{
+    public void init() throws ServletException {
         super.init();
-        if(userFacade.count() !=0) return;
+        if(userFacade.count() != 0) return;
         
         User user = new User();
         user.setFirstname("Daniil");
         user.setLastname("Mozgov");
-        user.setPhone("58582020");
+        user.setPhone("41280401456");
         user.setLogin("admin");
+        user.setMoney("1000");
         String salt = pp.getSalt();
         user.setSalt(salt);
         String password = pp.passwordEncript("12345", salt);
@@ -71,31 +65,28 @@ public class LoginServlet extends HttpServlet {
         userRolesFacade.create(userRoles);
         
         role = new Role();
-        role.setRoleName("ADMINISTRATOR");
+        role.setRoleName("MANAGER");
         roleFacade.create(role);
         userRoles = new UserRoles();
         userRoles.setRole(role);
         userRoles.setUser(user);
         userRolesFacade.create(userRoles);
         
+        role = new Role();
+        role.setRoleName("ADMINISTRATOR");
+        roleFacade.create(role);
+        userRoles = new UserRoles();
+        userRoles.setRole(role);
+        userRoles.setUser(user);
+        userRolesFacade.create(userRoles);
     }
-    
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
         JsonObjectBuilder job = Json.createObjectBuilder();
         String path = request.getServletPath();
-        switch(path){
+        switch (path) {
             case "/login":
                 JsonReader jsonReader = Json.createReader(request.getReader());
                 JsonObject jo = jsonReader.readObject();
@@ -103,7 +94,7 @@ public class LoginServlet extends HttpServlet {
                 String password = jo.getString("password","");
                 User authUser = userFacade.findByLogin(login);
                 if(authUser == null){
-                    job.add("info", "No account with this login, make one");
+                    job.add("info", "Нет такого пользователя");
                     job.add("auth", false);
                     try (PrintWriter out = response.getWriter()) {
                         out.println(job.build().toString());
@@ -112,7 +103,7 @@ public class LoginServlet extends HttpServlet {
                 }
                 password = pp.passwordEncript(password, authUser.getSalt());
                 if(!password.equals(authUser.getPassword())){
-                    job.add("info", "Incorrect Password");
+                    job.add("info", "Не совпадает пароль");
                     job.add("auth", false);
                     try (PrintWriter out = response.getWriter()) {
                         out.println(job.build().toString());
@@ -122,7 +113,7 @@ public class LoginServlet extends HttpServlet {
                 HttpSession session = request.getSession(true);
                 session.setAttribute("authUser", authUser);
                 UserJsonBuilder ujb = new UserJsonBuilder();
-                job.add("info", "Welcome "+authUser.getLogin());
+                job.add("info", "You logged in "+authUser.getFirstname()+"!");
                 job.add("auth",true);
                 job.add("token", session.getId());
                 job.add("user", ujb.getJsonUser(authUser));
@@ -131,32 +122,31 @@ public class LoginServlet extends HttpServlet {
                         out.println(job.build().toString());
                     }
                 break;
-                
             case "/logout":
                 session = request.getSession(false);
                 if(session != null){
                     session.invalidate();
-                    job.add("info", "Logged out");
+                    job.add("info", "Вы вышли");
                     job.add("auth", false);
                     try (PrintWriter out = response.getWriter()) {
                         out.println(job.build().toString());
                     }
                 }
                 break;
-                
-            case "/registration":
+            case "/registrationUser":
                 jsonReader = Json.createReader(request.getReader());
                 jo = jsonReader.readObject();
                 String firstname = jo.getString("firstname","");
                 String lastname = jo.getString("lastname","");
                 String phone = jo.getString("phone","");
+                String money = jo.getString("money","");
                 login = jo.getString("login","");
                 password = jo.getString("password","");
                 if("".equals(firstname) || "".equals(lastname)
                         || "".equals(phone) || "".equals(login)
                         || "".equals(password)){
                     job.add("status", false);
-                    job.add("info", "All fields have to be filled out");
+                    job.add("info", "Все поля должны быть заполнены");
                     try (PrintWriter out = response.getWriter()) {
                         out.println(job.build().toString());
                     }
@@ -167,6 +157,7 @@ public class LoginServlet extends HttpServlet {
                 newUser.setLastname(lastname);
                 newUser.setPhone(phone);
                 newUser.setLogin(login);
+                newUser.setMoney(money);
                 String salt = pp.getSalt();
                 newUser.setSalt(salt);
                 password = pp.passwordEncript(password, salt);
@@ -178,15 +169,13 @@ public class LoginServlet extends HttpServlet {
                 ur.setUser(newUser);
                 userRolesFacade.create(ur);
                 job.add("status", true);
-                    job.add("info", "New account added");
+                    job.add("info", "Новый пользователь добавлен");
                     try (PrintWriter out = response.getWriter()) {
                         out.println(job.build().toString());
                     }
                 break;
         }
-        
     }
-
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -225,5 +214,4 @@ public class LoginServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

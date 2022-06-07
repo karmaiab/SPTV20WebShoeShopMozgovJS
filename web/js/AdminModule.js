@@ -1,4 +1,6 @@
-import {checkMenuPanel} from './app.js';
+
+import {checkMenuPanel} from './index.js';
+import {viewModule} from './ViewModule.js';
 
 class AdminModule{
     getRoles(){
@@ -7,28 +9,29 @@ class AdminModule{
             headers: {
                 'Content-Type': 'application/json;charset:utf8'
             },
-            credentials: 'include',
+            credentials: 'include'
         });
         pormiseRoles.then(response => response.json())
                     .then(response => {
                         if(response.status){
-                            adminModule.insertSelectRoles(response.roles)
+                            adminModule.insertSelectRoles(response.roles);
                         }else{
                             document.getElementById('info').innerHTML = 'Список ролей пуст';
                         }
                     })
                     .catch(error =>{
-                       document.getElementById('info').innerHTML = 'Ошибка сервера (getRoles): '+error
+                       document.getElementById('info').innerHTML = 'Ошибка сервера (getRoles): '+error;
                         
-                    })
+                    });
     }
+
     getUsersMap(){
         let promiseUsersMap = fetch('getUsersMap',{
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json;charset:utf8'
             },
-            credentials: 'include',
+            credentials: 'include'
         });
         promiseUsersMap.then(response => response.json())
                        .then(response => {
@@ -39,10 +42,49 @@ class AdminModule{
                            }
                        })
                        .catch(error => {
-                           document.getElementById('info').innerHTML = 'Ошибка сервера (getUsersMap): '+error
+                           document.getElementById('info').innerHTML = 'Ошибка сервера (getUsersMap): '+error;
                        });
        
     }
+    
+    getAdminListModels() {
+        let promiseListModels = fetch('getListModels', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json;charset:utf8'
+            }
+        });
+        promiseListModels.then(response => response.json())
+                .then(response => {
+                    if(response.status) {
+                        let modelSelect = document.getElementById('list-models');
+                        modelSelect.options.length = 0;
+                        let option = null;
+                        option = document.createElement('option');
+                        option.text = "--Выберите модель--";
+                        option.value = '';
+                        modelSelect.add(option);
+                        for (let i = 0; i < response.options.length; i++) {
+                            option = document.createElement('option');
+                            option.text = response.options[i].modelName + ' // ' + response.options[i].modelFirm + ' // ' + response.options[i].modelPrice + '$';
+                            option.value = response.options[i].id;
+                            modelSelect.add(option);
+                        }
+                    }else {
+                        let modelSelect = document.getElementById('list-models');
+                        modelSelect.options.length = 0;
+                        let option = null;
+                        option = document.createElement('option');
+                        option.text = "Список моделей пуст...";
+                        option.value = '';
+                        document.getElementById('info').innerHTML = response.info;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('info').innerHTML = "insertListModels" + error.info;
+                });
+    }
+   
     setNewRole(){
         const userId = document.getElementById('select_users').value;
         const roleId = document.getElementById('select_roles').value;
@@ -69,10 +111,12 @@ class AdminModule{
                                       return;
                                   }
                                   adminModule.getUsersMap();
+                              }else{
+                                  document.getElementById('info').innerHTML = response.info;
                               }
                           })
                           .catch(error => {
-                              document.getElementById('info').innerHTML = 'Ошибка сервера (setNewRole): '+error
+                              document.getElementById('info').innerHTML = 'Ошибка сервера (setNewRole): '+error;
                           });
         
     }
@@ -82,7 +126,7 @@ class AdminModule{
         for(let i=0; i < usersMap.length; i++){
             const option = document.createElement('option');
             option.value = usersMap[i].user.id;
-            option.text = `${usersMap[i].user.login}. Роль: ${usersMap[i].role}`;
+            option.text = `${usersMap[i].user.username}. Роль: ${usersMap[i].role}`;
             select_users.add(option);
         }
     };
@@ -96,7 +140,8 @@ class AdminModule{
             select_roles.add(option);
         };
     }
-}
 
+}
 const adminModule = new AdminModule();
 export {adminModule};
+
