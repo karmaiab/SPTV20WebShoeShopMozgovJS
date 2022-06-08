@@ -2,87 +2,45 @@ import {viewModule} from './ViewModule.js';
 class UserModule{
     
 
-    
-    
-    getListBuyModels() {
-        let promiseListModels = fetch('getListBuyModels', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json;charset:utf8'
-            }
-        });
-        promiseListModels.then(response => response.json())
-                .then(response => {
-                    if(response.status) {
-                        viewModule.showBuyModel();
-                        let modelSelect = document.getElementById('select_models');
-                        modelSelect.options.length = 0;
-                        let option = null;
-                        option = document.createElement('option');
-                        option.text = "--Выберите модель--";
-                        option.value = '';
-                        modelSelect.add(option);
-                        for (let i = 0; i < response.options.length; i++) {
-                            option = document.createElement('option');
-                            option.text = response.options[i].name + ' // ' + response.options[i].brand + ' // ' + response.options[i].price + '$';
-                            option.value = response.options[i].id;
-                            modelSelect.add(option);
-                        }
-                    }else {
-                        let modelSelect = document.getElementById('select_models');
-                        modelSelect.options.length = 0;
-                        let option = null;
-                        option = document.createElement('option');
-                        option.text = "Список моделей пуст...";
-                        option.value = '';
-                        document.getElementById('info').innerHTML = response.info;
-                    }
-                })
-                .catch(error => {
-                    document.getElementById('info').innerHTML = "Список моделей пуст";
-                });
-    }    
-    
-    buyShoe(){
-        const id = document.getElementById('select_models').value;
-        const buyShoe = {
+      
+    buyModel(){
+        const id = document.getElementById('id').textContent;
+        const buyModel = {
             "id":id
         };
-        let promiseBuyShoe = fetch('buyShoe',{
+        let promiseBuyModel = fetch('buyModel',{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json;charset:utf8'
             },
             credentials: 'include',
-            body: JSON.stringify(buyShoe)
+            body: JSON.stringify(buyModel)
         });
-        promiseBuyShoe.then(response => response.json())
+        promiseBuyModel.then(response => response.json())
                           .then(response =>{
                               if(response.status){
+                                  sessionStorage.setItem('user',JSON.stringify(response.user));
                                   document.getElementById('info').innerHTML = response.info;
                               }else{
                                   document.getElementById('info').innerHTML = response.info;
                               }
                           })
                           .catch(error => {
-                              document.getElementById('info').innerHTML = "Ошибка сервера (buyShoe)"+error;
+                              document.getElementById('info').innerHTML = "Server Error (buyModel)"+error;
                           });
     }
-
-    editProfile(){
+    editAccount(){
         const authUser = JSON.parse(sessionStorage.getItem('user'));
-        const newFirstname = document.getElementById('firstname').value;
-        const newLastname = document.getElementById('lastname').value;
-        const newPhone = document.getElementById('phone').value;
-        const newMoney = document.getElementById('money').value;
+        const newFirstname = document.getElementById('newFirstname').value;
+        const newLastname = document.getElementById('newLastname').value;
+        const newPhone = document.getElementById('newPhone').value;
         const changeUser = {
             "id": authUser.id,
             "newFirstname": newFirstname,
             "newLastname": newLastname,
-            "newPhone": newPhone,
-            "newMoney": newMoney
+            "newPhone": newPhone
         };
-        let promiseChangeProfile = fetch('editProfile',{
+        let promiseEditAccount = fetch('editAccount',{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json;charset:utf8'
@@ -90,7 +48,7 @@ class UserModule{
             credentials: 'include',
             body: JSON.stringify(changeUser)
         });
-        promiseChangeProfile.then(response => response.json())
+        promiseEditAccount.then(response => response.json())
                           .then(response =>{
                               if(response.status){
                                   sessionStorage.setItem('user',JSON.stringify(response.user));
@@ -101,7 +59,93 @@ class UserModule{
                               }
                           })
                           .catch(error => {
-                              document.getElementById('info').innerHTML = "Ошибка сервера (editProfile)"+error;
+                              document.getElementById('info').innerHTML = "Server Error (editProfile)"+error;
+                          });
+    }
+    addMoney(){
+        const authUser = JSON.parse(sessionStorage.getItem('user'));
+        const newMoney = document.getElementById('newMoney').value;
+        const addMoney = {
+            "id": authUser.id,
+            "newMoney": newMoney
+        };
+        let promiseAddMoney = fetch('addMoney',{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset:utf8'
+            },
+            credentials: 'include',
+            body: JSON.stringify(addMoney)
+        });
+        promiseAddMoney.then(response => response.json())
+                          .then(response =>{
+                              if(response.status){
+                                  sessionStorage.setItem('user',JSON.stringify(response.user));
+                                  viewModule.showProfile();
+                                  document.getElementById('info').innerHTML = response.info;
+                              }else{
+                                  document.getElementById('info').innerHTML = response.info;
+                              }
+                          })
+                          .catch(error => {
+                              document.getElementById('info').innerHTML = "Server Error (addMoney)"+error;
+                          });
+    }
+    
+    getListModel(){
+        let promiseGetListModel = fetch('getListModel',{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset:utf8'
+            },
+            credentials: 'include'
+        });
+        promiseGetListModel.then(response => response.json())
+                          .then(response =>{
+                              if(response.status){
+                                  document.getElementById('info').innerHTML = response.info;
+                                  viewModule.showListModel(response.listModel);
+                              }else{
+                                  document.getElementById('info').innerHTML = response.info;
+                              }
+                          })
+                          .catch(error => {
+                              document.getElementById('info').innerHTML = "Server Error  (getListModel)"+error;
+                          });
+    }
+    editPassword(){
+        const authUser = JSON.parse(sessionStorage.getItem('user'));
+        const newPassword1 = document.getElementById('newPassword1').value;
+        const newPassword2 = document.getElementById('newPassword2').value;
+        if(newPassword1 !== newPassword2){
+            document.getElementById('info').innerHTML = 'Passwords do not match!';
+            return;
+        }
+        const editPassword = {
+            "id": authUser.id,
+            "newPassword1": newPassword1,
+            "newPassword2": newPassword2
+        };
+        let promiseEditPassword = fetch('editPassword',{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset:utf8'
+            },
+            credentials: 'include',
+            body: JSON.stringify(editPassword)
+        });
+        promiseEditPassword.then(response => response.json())
+                          .then(response =>{
+                              if(response.status){
+                                  sessionStorage.setItem('user',JSON.stringify(response.user));
+                                  viewModule.showProfile();
+                                  document.getElementById('info').innerHTML = response.info;
+                              }else{
+                                  document.getElementById('info').innerHTML = response.info;
+                              }
+                          })
+                          .catch(error => {
+                              document.getElementById('info').innerHTML = "Server Error (addMoney)"+error;
                           });
     }
 }

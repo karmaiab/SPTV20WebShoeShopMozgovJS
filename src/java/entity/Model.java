@@ -22,9 +22,73 @@ public class Model implements Serializable{
 
     @Override
     public String toString() {
-        return id+") Брэнд: "+brand+", Название: "+name+", Размер: "+size+", Цена: "+price+", В наличии: "+quantity;
+        return "Model{" + "id=" + id + ", brand=" + brand + ", size=" + size + ", name=" + name + ", price=" + price + ", quantity=" + quantity + ", pathToImage=" + pathToImage + '}';
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 89 * hash + Objects.hashCode(this.id);
+        hash = 89 * hash + Objects.hashCode(this.brand);
+        hash = 89 * hash + this.size;
+        hash = 89 * hash + Objects.hashCode(this.name);
+        hash = 89 * hash + this.price;
+        hash = 89 * hash + this.quantity;
+        hash = 89 * hash + Objects.hashCode(this.pathToImage);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Model other = (Model) obj;
+        if (this.size != other.size) {
+            return false;
+        }
+        if (this.price != other.price) {
+            return false;
+        }
+        if (this.quantity != other.quantity) {
+            return false;
+        }
+        if (!Objects.equals(this.brand, other.brand)) {
+            return false;
+        }
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        if (!Objects.equals(this.pathToImage, other.pathToImage)) {
+            return false;
+        }
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        return true;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
 
     public int getSize() {
         return size;
@@ -58,70 +122,6 @@ public class Model implements Serializable{
         this.quantity = quantity;
     }
 
-    public String getBrand() {
-        return brand;
-    }
-
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 13 * hash + Objects.hashCode(this.id);
-        hash = 13 * hash + Objects.hashCode(this.name);
-        hash = 13 * hash + Objects.hashCode(this.price);
-        hash = 13 * hash + Objects.hashCode(this.brand);
-        hash = 13 * hash + Objects.hashCode(this.quantity);
-        hash = 13 * hash + Objects.hashCode(this.size);
-        hash = 13 * hash + Objects.hashCode(this.pathToImage);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Model other = (Model) obj;
-        if (this.size != other.size) {
-            return false;
-        }
-        if (this.price != other.price) {
-            return false;
-        }
-        if (this.quantity != other.quantity) {
-            return false;
-        }
-        if (!Objects.equals(this.brand, other.brand)) {
-            return false;
-        }
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
-        if (!Objects.equals(this.id, other.id)) {
-            return false;
-        }
-        if (!Objects.equals(this.pathToImage ,other.pathToImage)) {
-            return false;
-        }
-        return true;
-    }
-
     public String getPathToImage() {
         return pathToImage;
     }
@@ -129,5 +129,7 @@ public class Model implements Serializable{
     public void setPathToImage(String pathToImage) {
         this.pathToImage = pathToImage;
     }
+
+   
 
 }

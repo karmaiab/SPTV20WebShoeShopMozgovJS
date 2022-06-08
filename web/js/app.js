@@ -2,24 +2,25 @@ import {viewModule} from './ViewModule.js';
 import {loginModule} from './LoginModule.js';
 import {userModule} from './UserModule.js';
 import {adminModule} from './AdminModule.js';
+import {managerModule} from './ManagerModule.js';
 
 export{checkMenuPanel};
 
-const menu_list_pages = document.getElementById("menu_list_pages");
-menu_list_pages.addEventListener("click",(e)=>{
+const menu_list_m = document.getElementById("menu_list_m");
+menu_list_m.addEventListener("click",(e)=>{
     e.preventDefault();
     toggleActiveMenu(e.target.id);
-    userModule.getListAccountData();
+    userModule.getListModel();
 });
 
-const menu_add = document.getElementById("menu_add");
-menu_add.addEventListener("click", (e)=>{
+const menu_add_m = document.getElementById("menu_add_m");
+menu_add_m.addEventListener("click", (e)=>{
     e.preventDefault();
     toggleActiveMenu(e.target.id);
     viewModule.showAddModel();
 });
 
-const menu_admin_panel = document.getElementById("menu_admin");
+const menu_admin_panel = document.getElementById("menu_admin_panel");
 menu_admin_panel.addEventListener("click",(e)=>{
     e.preventDefault();
     toggleActiveMenu(e.target.id);
@@ -30,7 +31,7 @@ const menu_edit_m = document.getElementById("menu_edit_m");
 menu_edit_m.addEventListener("click", (e) =>{
     e.preventDefault();
     toggleActiveMenu(e.target.id);
-    viewModule.showEditModel();
+    managerModule.getListModels();
 });
 
 const menu_login = document.getElementById("menu_login");
@@ -46,24 +47,14 @@ menu_logout.addEventListener("click",(e)=>{
     loginModule.sendLogout();
 });
 
-const menu_buy = document.getElementById("menu_buy");
-menu_buy.addEventListener("click", (e)=>{
-   e.preventDefault();
-    toggleActiveMenu(e.target.id);
-});
 
 const menu_profile = document.getElementById("menu_profile");
 menu_profile.addEventListener("click", (e)=>{
    e.preventDefault();
     toggleActiveMenu(e.target.id);
+    viewModule.showProfile();
 });
 
-const menu_edit_p = document.getElementById("menu_edit_p");
-menu_edit_p.addEventListener("click", (e)=> {
-    e.preventDefault();
-    toggleActiveMenu(e.target.id);
-    viewModule.showEditProfile();
-});
 
 function toggleActiveMenu(selectedElementId){
     const listNavlinks = document.getElementsByClassName("nav-link");
@@ -83,85 +74,104 @@ function toggleActiveMenu(selectedElementId){
 function checkMenuPanel(){
     let role = sessionStorage.getItem('role');
     if(role===null){
-        if(!document.getElementById('menu_add').classList.contains('d-none')){
-            document.getElementById('menu_add').classList.add('d-none');
+        if(document.getElementById('menu_list_m').classList.contains('d-none')){
+            document.getElementById('menu_list_m').classList.remove('d-none');
+        }
+        if(!document.getElementById('menu_add_m').classList.contains('d-none')){
+            document.getElementById('menu_add_m').classList.add('d-none');
         }
         if(!document.getElementById('menu_edit_m').classList.contains('d-none')){
             document.getElementById('menu_edit_m').classList.add('d-none');
         }
-        if(!document.getElementById('menu_admin').classList.contains('d-none')){
-            document.getElementById('menu_admin').classList.add('d-none');
+        if(!document.getElementById('menu_admin_panel').classList.contains('d-none')){
+            document.getElementById('menu_admin_panel').classList.add('d-none');
         }
         if(!document.getElementById('menu_logout').classList.contains('d-none')){
             document.getElementById("menu_logout").classList.add('d-none'); 
         }
-        if(!document.getElementById('menu_login').classList.contains('d-none')){
+        if(document.getElementById('menu_login').classList.contains('d-none')){
             document.getElementById("menu_login").classList.remove('d-none');
-        }
-        if(!document.getElementById('menu_buy').classList.contains('d-none')){
-            document.getElementById('menu_buy').classList.add('d-none');
         }
         if(!document.getElementById('menu_profile').classList.contains('d-none')){
             document.getElementById('menu_profile').classList.add('d-none');
         }
-        if(!document.getElementById('menu_edit_p').classList.contains('d-none')){
-            document.getElementById('menu_edit_p').classList.add('d-none');
-        }
+
         return;
     }
     role = JSON.parse(role);
     if(role.roleName === 'USER'){
-        if(!document.getElementById('menu_add').classList.contains('d-none')){
-            document.getElementById('menu_add').classList.add('d-none');//Hide add oanel
+        if(document.getElementById('menu_list_m').classList.contains('d-none')){
+            document.getElementById('menu_list_m').classList.remove('d-none');
+        }
+        if(!document.getElementById('menu_add_m').classList.contains('d-none')){
+            document.getElementById('menu_add_m').classList.add('d-none');
         }
         if(!document.getElementById('menu_edit_m').classList.contains('d-none')){
-            document.getElementById('menu_edit_m').classList.add('d-none');//Hide edit panel
+            document.getElementById('menu_edit_m').classList.add('d-none');
         }
-        if(!document.getElementById('menu_admin').classList.contains('d-none')){
-            document.getElementById('menu_admin').classList.add('d-none');//Hide admin panel
+        if(!document.getElementById('menu_admin_panel').classList.contains('d-none')){
+            document.getElementById('menu_admin_panel').classList.add('d-none');
         }
         if(document.getElementById('menu_logout').classList.contains('d-none')){
-            document.getElementById("menu_logout").classList.remove('d-none'); //Show logout
+            document.getElementById("menu_logout").classList.remove('d-none'); 
         }
         if(!document.getElementById('menu_login').classList.contains('d-none')){
-            document.getElementById("menu_login").classList.add('d-none');//Hide login
-        }
-        if(document.getElementById('menu_buy').classList.contains('d-none')){
-            document.getElementById('menu_buy').classList.remove('d-none'); //Show buy menu
+            document.getElementById("menu_login").classList.add('d-none');
         }
         if(document.getElementById('menu_profile').classList.contains('d-none')){
-            document.getElementById('menu_profile').classList.remove('d-none');//Show profile menu
+            document.getElementById('menu_profile').classList.remove('d-none');
         }
-        if(!document.getElementById('menu_edit_p').classList.contains('d-none')){
-            document.getElementById('menu_edit_p').classList.remove('d-none');//Hide edit profile menu
+
+        return;
+    }
+    if(role.roleName === 'MANAGER'){
+        if(document.getElementById('menu_list_m').classList.contains('d-none')){
+            document.getElementById('menu_list_m').classList.remove('d-none');
         }
+        if(document.getElementById('menu_add_m').classList.contains('d-none')){
+            document.getElementById('menu_add_m').classList.remove('d-none');
+        }
+        if(document.getElementById('menu_edit_m').classList.contains('d-none')){
+            document.getElementById('menu_edit_m').classList.remove('d-none');
+        }
+        if(!document.getElementById('menu_admin_panel').classList.contains('d-none')){
+            document.getElementById('menu_admin_panel').classList.add('d-none');
+        }
+        if(document.getElementById('menu_logout').classList.contains('d-none')){
+            document.getElementById("menu_logout").classList.remove('d-none'); 
+        }
+        if(!document.getElementById('menu_login').classList.contains('d-none')){
+            document.getElementById("menu_login").classList.add('d-none');
+        }
+        if(document.getElementById('menu_profile').classList.contains('d-none')){
+            document.getElementById('menu_profile').classList.remove('d-none');
+        }
+
         return;
     }
     if(role.roleName === 'ADMINISTRATOR'){
-        if(document.getElementById('menu_add').classList.contains('d-none')){
-            document.getElementById('menu_add').classList.remove('d-none');//Show add panel
+        if(document.getElementById('menu_list_m').classList.contains('d-none')){
+            document.getElementById('menu_list_m').classList.remove('d-none');
+        }
+        if(document.getElementById('menu_add_m').classList.contains('d-none')){
+            document.getElementById('menu_add_m').classList.remove('d-none');
         }
         if(document.getElementById('menu_edit_m').classList.contains('d-none')){
-            document.getElementById('menu_edit_m').classList.remove('d-none');//Show edit panel
+            document.getElementById('menu_edit_m').classList.remove('d-none');
         }
-        if(document.getElementById('menu_admin').classList.contains('d-none')){
-            document.getElementById('menu_admin').classList.remove('d-none');//Show admin panel
+        if(document.getElementById('menu_admin_panel').classList.contains('d-none')){
+            document.getElementById('menu_admin_panel').classList.remove('d-none');
         }
         if(document.getElementById('menu_logout').classList.contains('d-none')){
-            document.getElementById("menu_logout").classList.remove('d-none'); //Show logout
+            document.getElementById("menu_logout").classList.remove('d-none'); 
         }
         if(!document.getElementById('menu_login').classList.contains('d-none')){
-            document.getElementById("menu_login").classList.add('d-none');//Hide login
-        }
-        if(document.getElementById('menu_buy').classList.contains('d-none')){
-            document.getElementById('menu_buy').classList.remove('d-none'); //Show buy menu
+            document.getElementById("menu_login").classList.add('d-none');
         }
         if(document.getElementById('menu_profile').classList.contains('d-none')){
-            document.getElementById('menu_profile').classList.remove('d-none');//Show profile menu
+            document.getElementById('menu_profile').classList.remove('d-none');
         }
-        if(document.getElementById('menu_edit_p').classList.contains('d-none')){
-            document.getElementById('menu_edit_p').classList.remove('d-none');//Show edit profile menu
-        }
+
         return;
     }
 }

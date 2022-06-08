@@ -20,6 +20,7 @@ public class ModelJsonBuilder {
         job.add("price", model.getPrice());
         job.add("size", model.getSize());
         job.add("quantity", model.getQuantity());
+        job.add("pathToImage", model.getPathToImage());
         return job.build();
     }
     public JsonArray getJsonArrayModel(List<Model> listModelData){

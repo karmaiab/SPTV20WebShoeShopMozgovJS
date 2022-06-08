@@ -1,4 +1,4 @@
-import {checkMenuPanel} from './index.js';
+import {checkMenuPanel} from './app.js';
 import {viewModule} from './ViewModule.js';
 
 class ManagerModule{
@@ -18,27 +18,29 @@ class ManagerModule{
                         modelSelect.options.length = 0;
                         let option = null;
                         option = document.createElement('option');
-                        option.text = "SELECT";
+                        option.text = "Select!";
                         option.value = '';
                         modelSelect.add(option);
                         for (let i = 0; i < response.options.length; i++) {
                             option = document.createElement('option');
-                            option.text = response.options[i].name + ' // ' + response.options[i].brand + ' // ' + response.options[i].price + '$';
+                            option.text = ' Model: '+response.options[i].name + ' Brand: ' + response.options[i].brand + ' Price: ' + response.options[i].price + ' $ '+ ' Quantity: '+
+                                    response.options[i].quantity+' tk. ';
                             option.value = response.options[i].id;
                             modelSelect.add(option);
                         }
                     }else {
+                        viewModule.showEditModel();
                         let modelSelect = document.getElementById('select_models');
                         modelSelect.options.length = 0;
                         let option = null;
                         option = document.createElement('option');
-                        option.text = "Список моделей пуст...";
+                        option.text = "The list is empty!";
                         option.value = '';
-                        document.getElementById('info').innerHTML = response.info;
+                        modelSelect.add(option);
                     }
                 })
                 .catch(error => {
-                    document.getElementById('info').innerHTML = "Список моделей пуст";
+                    document.getElementById('info').innerHTML = "Server Error (getListModels)"+error;
                 });
     }    
         
@@ -57,17 +59,17 @@ class ManagerModule{
                               }
                           })
                           .catch(error => {
-                              document.getElementById('info').innerHTML = "Ошибка сервера (sendNewModel)"+error;
+                              document.getElementById('info').innerHTML = "Server Error (sendNewModel)"+error;
                           });
     }
     
     editModel(){
         const id = document.getElementById('select_models').value;
-        const newName = document.getElementById('name').value;
-        const newBrand = document.getElementById('brand').value;
-        const newSize = document.getElementById('size').value;
-        const newQuantity = document.getElementById('quantity').value;
-        const newPrice = document.getElementById('price').value;
+        const newName = document.getElementById('newName').value;
+        const newBrand = document.getElementById('newBrand').value;
+        const newSize = document.getElementById('newSize').value;
+        const newQuantity = document.getElementById('newQuantity').value;
+        const newPrice = document.getElementById('newPrice').value;
         const changeModel = {
             "id": id,
             "newName": newName,
@@ -94,7 +96,7 @@ class ManagerModule{
                               }
                           })
                           .catch(error => {
-                              document.getElementById('info').innerHTML = "Ошибка сервера (changeModel)"+error;
+                              document.getElementById('info').innerHTML = "Server Error (editModel)"+error;
                           });
     }
     

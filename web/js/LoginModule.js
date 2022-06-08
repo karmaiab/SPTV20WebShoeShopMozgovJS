@@ -1,13 +1,13 @@
-import {checkMenuPanel} from './index.js';
+import {checkMenuPanel} from './app.js';
 import {viewModule} from './ViewModule.js';
 
 
 class LoginModule {
  sendCredential(){
-    const username = document.getElementById('username').value;
+    const login = document.getElementById('login').value;
     const password = document.getElementById('password').value;
     const credential = {
-        "username": username,
+        "login": login,
         "password": password
     };
     let promise = fetch('login',{
@@ -34,7 +34,7 @@ class LoginModule {
            }
        })
        .catch( error =>{
-           document.getElementById('info').innerHTML = "Ошибка запроса (sendCredential): "+error;
+           document.getElementById('info').innerHTML = "Server Error (sendCredential): "+error;
            document.getElementById('content').innerHTML = "";
        });
  }
@@ -66,11 +66,10 @@ class LoginModule {
     const lastname = document.getElementById('lastname').value;
      const login = document.getElementById('login').value;
      const phone = document.getElementById('phone').value;
-     const money = document.getElementById('money').value;
      const password1 = document.getElementById('password1').value;
      const password2 = document.getElementById('password2').value;
      if(password1 !== password2){
-         document.getElementById('info').innerHTML = 'Пароли не совпадают';
+         document.getElementById('info').innerHTML = 'Password do not match!';
          document.getElementById('password1').innerHTML = "";
          document.getElementById('password2').innerHTML = "";
          return;
@@ -80,7 +79,6 @@ class LoginModule {
          "lastname": lastname,
          "phone": phone,
          "login": login,
-         "money": money,
          "password": password1
      };
      let promise = fetch('registrationUser',{
@@ -102,7 +100,7 @@ class LoginModule {
                 }
             })
             .catch(error =>{
-                document.getElementById('info').innerHTML = "Ошибка запроса (registration): "+error;
+                document.getElementById('info').innerHTML = "Server Error (registration): "+error;
                 document.getElementById('content').innerHTML = "";
             });
     }

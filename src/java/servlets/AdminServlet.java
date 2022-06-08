@@ -29,8 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
-import jsontools.UserJsonBuilder;
-import jsontools.RoleJsonBuilder;
+import jsonbuilders.UserJsonBuilder;
+import jsonbuilders.RoleJsonBuilder;
 import session.ModelFacade;
 import session.RoleFacade;
 import session.UserFacade;
@@ -74,7 +74,7 @@ public class AdminServlet extends HttpServlet {
         JsonObjectBuilder job = Json.createObjectBuilder();
         HttpSession session = request.getSession(false);
         if(session == null){
-            job.add("info", "Вы не авторизованы");
+            job.add("info", "You are not authorized!");
                     job.add("auth", false);
                     try (PrintWriter out = response.getWriter()) {
                         out.println(job.build().toString());
@@ -83,7 +83,7 @@ public class AdminServlet extends HttpServlet {
         }
         User authUser = (User) session.getAttribute("authUser");
         if(authUser == null){
-            job.add("info", "Вы не авторизованы");
+            job.add("info", "You are not authorized!");
                     job.add("auth", false);
                     try (PrintWriter out = response.getWriter()) {
                         out.println(job.build().toString());
@@ -91,7 +91,7 @@ public class AdminServlet extends HttpServlet {
                     return;
         }
         if(!userRolesFacade.isRole("ADMINISTRATOR",authUser)){
-            job.add("info", "У вас нет необходимых разрешений");
+            job.add("info", "You do not have the required permissions!");
                     job.add("auth", false);
                     try (PrintWriter out = response.getWriter()) {
                         out.println(job.build().toString());
@@ -141,7 +141,7 @@ public class AdminServlet extends HttpServlet {
                     User user = userFacade.find(Long.parseLong(userId));
                     if("admin".equals(user.getLogin())){
                         job.add("status",false);
-                        job.add("info", "Этому пользователю изменить роль нет возможности");
+                        job.add("info", "This user cannot change role!");
                         try (PrintWriter out = response.getWriter()) {
                             out.println(job.build().toString());
                         }
@@ -152,6 +152,7 @@ public class AdminServlet extends HttpServlet {
                         job.add("status",true);
                         job.add("user", new UserJsonBuilder().getJsonUser(user));
                         job.add("role", new RoleJsonBuilder().getJsonRole(role));
+                        job.add("info", "User role "+user.getLogin()+" successfully changed!");
                 } catch (IOException | NumberFormatException e) {
                     job.add("status",false);
                 }
@@ -164,18 +165,7 @@ public class AdminServlet extends HttpServlet {
         }
         
     }
-    private String getFileName(Part part){
-        final String partHeader = part.getHeader("content-disposition");
-        for (String content : part.getHeader("content-disposition").split(";")){
-            if(content.trim().startsWith("filename")){
-                return content
-                        .substring(content.indexOf('=')+1)
-                        .trim()
-                        .replace("\"",""); 
-            }
-        }
-        return null;
-    }
+
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

@@ -94,7 +94,7 @@ public class LoginServlet extends HttpServlet {
                 String password = jo.getString("password","");
                 User authUser = userFacade.findByLogin(login);
                 if(authUser == null){
-                    job.add("info", "Нет такого пользователя");
+                    job.add("info", "No such user!");
                     job.add("auth", false);
                     try (PrintWriter out = response.getWriter()) {
                         out.println(job.build().toString());
@@ -103,7 +103,7 @@ public class LoginServlet extends HttpServlet {
                 }
                 password = pp.passwordEncript(password, authUser.getSalt());
                 if(!password.equals(authUser.getPassword())){
-                    job.add("info", "Не совпадает пароль");
+                    job.add("info", "Password do not match!");
                     job.add("auth", false);
                     try (PrintWriter out = response.getWriter()) {
                         out.println(job.build().toString());
@@ -113,7 +113,7 @@ public class LoginServlet extends HttpServlet {
                 HttpSession session = request.getSession(true);
                 session.setAttribute("authUser", authUser);
                 UserJsonBuilder ujb = new UserJsonBuilder();
-                job.add("info", "You logged in "+authUser.getFirstname()+"!");
+                job.add("info", "You logged in as "+authUser.getFirstname()+"!");
                 job.add("auth",true);
                 job.add("token", session.getId());
                 job.add("user", ujb.getJsonUser(authUser));
@@ -126,7 +126,7 @@ public class LoginServlet extends HttpServlet {
                 session = request.getSession(false);
                 if(session != null){
                     session.invalidate();
-                    job.add("info", "Вы вышли");
+                    job.add("info", "You logged out!");
                     job.add("auth", false);
                     try (PrintWriter out = response.getWriter()) {
                         out.println(job.build().toString());
@@ -139,14 +139,13 @@ public class LoginServlet extends HttpServlet {
                 String firstname = jo.getString("firstname","");
                 String lastname = jo.getString("lastname","");
                 String phone = jo.getString("phone","");
-                String money = jo.getString("money","");
                 login = jo.getString("login","");
                 password = jo.getString("password","");
                 if("".equals(firstname) || "".equals(lastname)
                         || "".equals(phone) || "".equals(login)
                         || "".equals(password)){
                     job.add("status", false);
-                    job.add("info", "Все поля должны быть заполнены");
+                    job.add("info", "All fields must be filled!");
                     try (PrintWriter out = response.getWriter()) {
                         out.println(job.build().toString());
                     }
@@ -157,7 +156,7 @@ public class LoginServlet extends HttpServlet {
                 newUser.setLastname(lastname);
                 newUser.setPhone(phone);
                 newUser.setLogin(login);
-                newUser.setMoney(money);
+                newUser.setMoney("0");
                 String salt = pp.getSalt();
                 newUser.setSalt(salt);
                 password = pp.passwordEncript(password, salt);
@@ -169,7 +168,7 @@ public class LoginServlet extends HttpServlet {
                 ur.setUser(newUser);
                 userRolesFacade.create(ur);
                 job.add("status", true);
-                    job.add("info", "Новый пользователь добавлен");
+                    job.add("info", "New user added!");
                     try (PrintWriter out = response.getWriter()) {
                         out.println(job.build().toString());
                     }
