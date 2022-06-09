@@ -35,7 +35,7 @@ import session.UserRolesFacade;
 
 /**
  *
- * @author makso
+ * @author Danja
  */
 @WebServlet(name = "ManagerServlet", urlPatterns = {
     "/newModel",

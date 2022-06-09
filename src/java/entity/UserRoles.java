@@ -15,7 +15,7 @@ import javax.persistence.OneToOne;
 
 /**
  *
- * @author user
+ * @author Danja
  */
 @Entity
 public class UserRoles implements Serializable {

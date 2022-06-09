@@ -25,7 +25,7 @@ import tools.PasswordProtected;
 
 /**
  *
- * @author pupil
+ * @author Danja
  */
 @WebServlet(name = "LoginServlet", loadOnStartup = 0, urlPatterns = {
     "/login",

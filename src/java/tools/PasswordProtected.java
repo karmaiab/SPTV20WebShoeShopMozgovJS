@@ -17,7 +17,7 @@ import javax.crypto.spec.PBEKeySpec;
 
 /**
  *
- * @author user
+ * @author Danja
  */
 public class PasswordProtected {
     public String passwordEncript(String password, String salt){

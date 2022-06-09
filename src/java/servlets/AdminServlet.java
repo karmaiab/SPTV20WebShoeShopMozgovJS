@@ -39,7 +39,7 @@ import tools.PasswordProtected;
 
 /**
  *
- * @author user
+ * @author Danja
  */
 @WebServlet(name = "AdminServlet", urlPatterns = {
     "/getRoles",

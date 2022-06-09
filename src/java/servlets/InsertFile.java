@@ -20,7 +20,7 @@ import static org.apache.jasper.Constants.DEFAULT_BUFFER_SIZE;
 
 /**
  *
- * @author user
+ * @author Danja
  */
 @WebServlet(name = "InsertFile", urlPatterns = {
     "/insertFile/*"

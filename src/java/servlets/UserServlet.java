@@ -29,7 +29,7 @@ import tools.PasswordProtected;
 
 /**
  *
- * @author user
+ * @author Danja
  */
 @WebServlet(name = "UserServlet", urlPatterns = {
     "/editAccount",
